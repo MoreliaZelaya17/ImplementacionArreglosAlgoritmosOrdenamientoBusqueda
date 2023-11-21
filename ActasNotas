@@ -1,0 +1,186 @@
+import java.util.Scanner;
+
+public class App {
+    static Scanner lector = new Scanner(System.in);
+
+    public static String mesaje(String mensaje) {
+        System.out.print("Ingrese " + mensaje + " :");
+        return lector.nextLine();
+    }
+
+    public static int Numero(String mensaje) {
+        System.out.print("Ingrese " + mensaje + " :");
+        return lector.nextInt();
+    }
+
+    public static double Nota(String mensaje, double limite) {
+        double nota;
+        do {
+            System.out.print("Ingrese " + mensaje + " (limite " + limite + " ): ");
+            nota = lector.nextDouble();
+        } while (nota < 0 || nota > limite);
+        return nota;
+    }
+
+    public static boolean Proyecto() {
+        String afirmacion;
+        System.out.println("LLeva proyecto de curso? (Si/No)");
+        afirmacion = lector.next();
+        return afirmacion.equalsIgnoreCase("Si");
+    }
+
+    public static boolean deserciones() {
+        String afirmacion;
+        System.out.println("ha desertado el estudiante? (Si/No)");
+        afirmacion = lector.next();
+        return afirmacion.equalsIgnoreCase("Si");
+
+    }
+
+    public static int matriculaEfectiva(int matriculaInicial, int[] deserciones) {
+        int matriculaEfectiva = matriculaInicial;
+        for (int desercion : deserciones) {
+            matriculaEfectiva = matriculaEfectiva - desercion;
+        }
+        return matriculaEfectiva;
+    }
+
+    public static int deserciones(int[] Deserciones) {
+        int numDeserciones = 0;
+        for (int desercion : Deserciones) {
+            numDeserciones = numDeserciones + desercion;
+        }
+        return numDeserciones;
+    }
+
+    public static int aprobados(boolean[] Aprobados) {
+        int numAprobados = 0;
+        for (boolean aprobado : Aprobados) {
+            if (aprobado) {
+                numAprobados++;
+            }
+        }
+        return numAprobados;
+    }
+
+    public static double porcentajeAprobados(int numAprobados, int matriculaEfectiva) {
+        if (matriculaEfectiva == 0) {
+            return 0;
+        }
+        return (double) numAprobados / matriculaEfectiva * 100;
+    }
+
+    public static double notaMinima(double[] Notas) {
+        double minimo = Double.MAX_VALUE;
+        for (double nota : Notas) {
+            if (nota < minimo) {
+                minimo = nota;
+
+            }
+        }
+        return minimo;
+    }
+
+    public static double notaMaxima(double[] Notas) {
+        double maximo = Double.MIN_VALUE;
+        for (double nota : Notas) {
+            if (nota > maximo) {
+                maximo = nota;
+            }
+        }
+        return maximo;
+    }
+
+    public static double promedio(double[] Notas) {
+        double suma = 0;
+        if (Notas.length == 0) {
+            return 0;
+        }
+        for (double nota : Notas) {
+            suma = suma + nota;
+        }
+        return suma / Notas.length;
+    }
+
+    public static void main(String[] args) {
+        String nombreCurso, periodoLectivo, carrera, modalidad, codCurso, grupo, codAsignatura, codigoProgramAsig, numCarnet,
+                nombresApellidos;
+        int numEstudiantes, matriculaInicial, matriculaEfectiva, numDeserciones, cantAprobados, cantReprobados;
+        double parcial1, parcial2, notFinal, pruebas, PorcenAprobados, PorcenReprobados, notMinima, notMaxima,
+                promedioNotas;
+
+        nombreCurso = mesaje("Ingrese el nombre del curso: ");
+        periodoLectivo = mesaje("Ingrese el periodo lectivo: ");
+        carrera = mesaje("Ingrese su carrera:  ");
+        modalidad = mesaje("Ingrese la modalidad: ");
+        codCurso = mesaje("Ingrese el codido del curso: ");
+        grupo = mesaje("Ingrese el grupo en el que se encuentra: ");
+        codAsignatura = mesaje("Ingrese el codido de la asignatura: ");
+        codigoProgramAsig = mesaje("Ingrese el codigo del programa: ");
+        numEstudiantes = Numero("Ingrese la cantidad de estudiantes a gestionar: ");
+
+        int[] deserciones = new int[numEstudiantes];
+        double[] notaFinales = new double[numEstudiantes];
+        boolean[] aprobados = new boolean[numEstudiantes];
+
+        System.out.println("Ingrese los datos de los estudiantes: ");
+        for (int i = 0; i < numEstudiantes; i++) {
+            numCarnet = mesaje("Ingrese su numero de carnet: ");
+            nombresApellidos = mesaje("Ingrese sus nombres y apellidos: ");
+            parcial1 = Nota("Ingrese la nota del primer parcial: ", 35);
+            pruebas = Nota("Ingrese el valor de las pruebas: ", 30);
+
+            if (Proyecto()) {
+                double notProyecto;
+                notProyecto = Nota("Ingrese el valor del proyecto: ", 35);
+                notFinal = parcial1 + pruebas + notProyecto;
+            } else {
+                parcial2 = Nota("Ingrese la nota del segundo parcial: ", 35);
+                notFinal = parcial1 + parcial2 + pruebas;
+            }
+
+            if (notFinal < 60) {
+                double examenConvo1 = Nota("Ingrese la nota de la primera convocatoria: ", 70);
+                notFinal = pruebas + examenConvo1;
+
+                if (notFinal < 60) {
+                    double examenConvo2 = Nota("Digite la nota de la segunda convocatoria: ", 100);
+                    notFinal = examenConvo2;
+                }
+
+            } else {
+                aprobados[i] = true;
+            }
+            notaFinales[i] = notFinal;
+
+            boolean deser = deserciones();
+            if (deser) {
+                deserciones[i] = 1;
+            }
+            System.out.println(" ");
+        }
+        matriculaInicial = numEstudiantes;
+        matriculaEfectiva = matriculaEfectiva(matriculaInicial, deserciones);
+        numDeserciones = deserciones(deserciones);
+        cantAprobados = aprobados(aprobados);
+        PorcenAprobados = porcentajeAprobados(cantAprobados, matriculaEfectiva);
+        cantReprobados = matriculaEfectiva - cantAprobados;
+        PorcenReprobados = 100 - PorcenAprobados;
+        notMinima = notaMinima(notaFinales);
+        notMaxima = notaMaxima(notaFinales);
+        promedioNotas = promedio(notaFinales);
+
+        System.out.println("Resultados: ");
+        System.out.println("Matricula inicial: " + matriculaInicial);
+        System.out.println("Matricula efectiva: " + matriculaEfectiva);
+        System.out.println("Numero de deserciones: " + numDeserciones);
+        System.out.println("cantidad de alumnos aprobados: " + cantAprobados);
+        System.out.println("Porcentaje aprobados: " + PorcenAprobados);
+        System.out.println("cantidad de alumnos reprobados: " + cantReprobados);
+        System.out.println("Porcentaje de reprobados: " + PorcenReprobados);
+        System.out.println("Nota maxima: " + notMaxima);
+        System.out.println("Nota minima: " + notMinima);
+
+    }
+
+}
